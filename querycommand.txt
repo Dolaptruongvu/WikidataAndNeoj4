@@ -1,0 +1,125 @@
+SELECT
+  ?person
+  ?personLabel
+  ?image
+  ?signature
+  ?sexOrGenderLabel
+  ?countryOfCitizenshipLabel
+  ?nameInNativeLanguage
+  ?vietnameseMiddleNameLabel
+  ?familyNameLabel
+  ?dateOfBirth
+  ?placeOfBirthLabel
+  ?dateOfDeath
+  ?placeOfDeathLabel
+  ?mannerOfDeathLabel
+  ?spouseLabel
+  ?numberOfChildren
+  ?nativeLanguageLabel
+  ?languagesSpokenLabel
+  ?occupationLabel
+  ?educatedAtLabel
+  ?academicDegreeLabel
+  ?memberOfPoliticalPartyLabel
+  ?awardReceivedLabel
+  ?describedAtURL
+  ?commonsCategory
+  ?VIAFID
+  ?ISNI
+  ?BnFID
+  ?GNDID
+  ?LibraryOfCongressID
+  ?IdRefID
+  ?WorldCatEntitiesID
+  ?BBCThingsID
+  ?BrockhausID
+  ?LexID
+  ?EncyclopaediaBritannicaID
+  ?FreebaseID
+  ?HrvatskaID
+  ?MunzingerID
+  ?NamuwikiID
+  ?NEseID
+  ?OnlinePWNID
+  ?OpenSanctionsID
+  ?TreccaniID
+  # Thông tin về Position
+  ?positionHeld
+  ?positionHeldLabel
+  ?startTime
+  ?endTime
+  ?replaces
+  ?replacesLabel
+  ?replacedBy
+  ?replacedByLabel
+WHERE {
+  # Lọc những người là chính trị gia Việt Nam
+  ?person wdt:P106 wd:Q82955;        # nghề nghiệp: chính trị gia
+          wdt:P27 wd:Q881.           # quốc tịch: Việt Nam
+
+  OPTIONAL { ?person wdt:P18 ?image . }
+  OPTIONAL { ?person wdt:P109 ?signature . }
+  OPTIONAL { ?person wdt:P21 ?sexOrGender . }  # Sex or gender
+  OPTIONAL { ?person wdt:P27 ?countryOfCitizenship . }
+  OPTIONAL { ?person wdt:P1559 ?nameInNativeLanguage . }
+  OPTIONAL { ?person wdt:P8500 ?vietnameseMiddleName . }
+  OPTIONAL { ?person wdt:P734 ?familyName . }
+  OPTIONAL { ?person wdt:P569 ?dateOfBirth . }
+  OPTIONAL { ?person wdt:P19 ?placeOfBirth . }
+  OPTIONAL { ?person wdt:P570 ?dateOfDeath . }
+  OPTIONAL { ?person wdt:P20 ?placeOfDeath . }
+  OPTIONAL { ?person wdt:P1196 ?mannerOfDeath . }
+  OPTIONAL { ?person wdt:P26 ?spouse . }
+  OPTIONAL { ?person wdt:P1971 ?numberOfChildren . }
+  OPTIONAL { ?person wdt:P103 ?nativeLanguage . }
+  OPTIONAL { ?person wdt:P1412 ?languagesSpoken . }
+  OPTIONAL { ?person wdt:P106 ?occupation . }
+  OPTIONAL { ?person wdt:P69 ?educatedAt . }
+  OPTIONAL { ?person wdt:P512 ?academicDegree . }
+  OPTIONAL { ?person wdt:P102 ?memberOfPoliticalParty . }
+  OPTIONAL { ?person wdt:P166 ?awardReceived . }
+  OPTIONAL { ?person wdt:P973 ?describedAtURL . }
+  OPTIONAL { ?person wdt:P373 ?commonsCategory . }
+  OPTIONAL { ?person wdt:P214 ?VIAFID . }
+  OPTIONAL { ?person wdt:P213 ?ISNI . }
+  OPTIONAL { ?person wdt:P268 ?BnFID . }
+  OPTIONAL { ?person wdt:P227 ?GNDID . }
+  OPTIONAL { ?person wdt:P244 ?LibraryOfCongressID . }
+  OPTIONAL { ?person wdt:P269 ?IdRefID . }
+  OPTIONAL { ?person wdt:P10832 ?WorldCatEntitiesID . }
+  OPTIONAL { ?person wdt:P1617 ?BBCThingsID . }
+  OPTIONAL { ?person wdt:P5019 ?BrockhausID . }
+  OPTIONAL { ?person wdt:P8313 ?LexID . }
+  OPTIONAL { ?person wdt:P1417 ?EncyclopaediaBritannicaID . }
+  OPTIONAL { ?person wdt:P646 ?FreebaseID . }
+  OPTIONAL { ?person wdt:P7982 ?HrvatskaID . }
+  OPTIONAL { ?person wdt:P1284 ?MunzingerID . }
+  OPTIONAL { ?person wdt:P8885 ?NamuwikiID . }
+  OPTIONAL { ?person wdt:P3222 ?NEseID . }
+  OPTIONAL { ?person wdt:P7305 ?OnlinePWNID . }
+  OPTIONAL { ?person wdt:P10632 ?OpenSanctionsID . }
+  OPTIONAL { ?person wdt:P3365 ?TreccaniID . }
+  
+  # Lấy thông tin Position
+  OPTIONAL {
+    ?person p:P39 ?statement .  # Liên kết với các vị trí đã giữ
+    ?statement ps:P39 ?positionHeld .
+    OPTIONAL { ?statement pq:P580 ?startTime . }          # Thời gian bắt đầu
+    OPTIONAL { ?statement pq:P582 ?endTime . }            # Thời gian kết thúc
+    OPTIONAL { ?statement pq:P1365 ?replaces . }          # Thay thế vị trí của ai
+    OPTIONAL { ?statement pq:P1366 ?replacedBy . }        # Được thay thế bởi ai
+  }
+
+  # Lấy nhãn cho tất cả các thuộc tính
+  SERVICE wikibase:label {
+    bd:serviceParam wikibase:language "vi,en" .
+    ?person rdfs:label ?personLabel .
+    ?sexOrGender rdfs:label ?sexOrGenderLabel .
+    ?countryOfCitizenship rdfs:label ?countryOfCitizenshipLabel .
+    ?placeOfBirth rdfs:label ?placeOfBirthLabel .
+    ?placeOfDeath rdfs:label ?placeOfDeathLabel .
+    ?positionHeld rdfs:label ?positionHeldLabel .
+    ?replaces rdfs:label ?replacesLabel .
+    ?replacedBy rdfs:label ?replacedByLabel .
+  }
+}

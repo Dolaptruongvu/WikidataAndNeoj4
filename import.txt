@@ -1,0 +1,51 @@
+// Tải dữ liệu Person và tạo nút cùng thuộc tính cơ bản
+LOAD CSV WITH HEADERS FROM 'file:///query_cleaned_fixed.csv' AS row
+WITH row WHERE row.person IS NOT NULL
+MERGE (p:Person {uri: row.person})
+SET 
+    p.name = row.personLabel,
+    p.image = row.image,
+    p.signature = row.signature,
+    p.dateOfBirth = CASE 
+                        WHEN row.dateOfBirth IS NOT NULL AND row.dateOfBirth <> '' 
+                        THEN date(row.dateOfBirth) 
+                        ELSE NULL 
+                   END,
+    p.dateOfDeath = CASE 
+                        WHEN row.dateOfDeath IS NOT NULL AND row.dateOfDeath <> '' 
+                        THEN date(row.dateOfDeath) 
+                        ELSE NULL 
+                   END;
+
+// Tạo nút Position và quan hệ POSITION_HELD
+LOAD CSV WITH HEADERS FROM 'file:///query_cleaned_fixed.csv' AS row
+WITH row WHERE row.positionHeldLabel IS NOT NULL AND row.positionHeldLabel <> ''
+MATCH (p:Person {uri: row.person})
+MERGE (pos:Position {name: row.positionHeldLabel})
+MERGE (p)-[r:POSITION_HELD]->(pos)
+SET 
+    r.startTime = CASE WHEN row.startTime IS NOT NULL AND row.startTime <> '' THEN date(row.startTime) ELSE NULL END,
+    r.endTime = CASE WHEN row.endTime IS NOT NULL AND row.endTime <> '' THEN date(row.endTime) ELSE NULL END,
+    r.replaces = row.replacesLabel,
+    r.replacedBy = row.replacedByLabel;
+
+// Tạo quan hệ REPLACED_BY giữa các Person
+LOAD CSV WITH HEADERS FROM 'file:///query_cleaned_fixed.csv' AS row
+WITH row WHERE row.replacedBy IS NOT NULL AND row.replacedBy <> ''
+MATCH (p:Person {uri: row.person})
+MERGE (replaced:Person {uri: row.replacedBy})
+MERGE (p)-[:REPLACED_BY]->(replaced);
+
+// Tạo nút Sex và quan hệ SEX_OR_GENDER
+LOAD CSV WITH HEADERS FROM 'file:///query_cleaned_fixed.csv' AS row
+WITH row WHERE row.sexOrGenderLabel IS NOT NULL AND row.sexOrGenderLabel <> ''
+MATCH (p:Person {uri: row.person})
+MERGE (sex:SexOrGender {name: row.sexOrGenderLabel})
+MERGE (p)-[:SEX_OR_GENDER]->(sex);
+
+// Tạo nút Country và quan hệ CITIZEN_OF
+LOAD CSV WITH HEADERS FROM 'file:///query_cleaned_fixed.csv' AS row
+WITH row WHERE row.countryOfCitizenshipLabel IS NOT NULL AND row.countryOfCitizenshipLabel <> ''
+MATCH (p:Person {uri: row.person})
+MERGE (country:Country {name: row.countryOfCitizenshipLabel})
+MERGE (p)-[:CITIZEN_OF]->(country);
